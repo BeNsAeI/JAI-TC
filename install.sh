@@ -1,13 +1,5 @@
 #!/bin/bash
 
-#Notes:
-# Lookup TODO
-# Time management
-# 
-# 
-# 
-# 
-
 #TODO: Supported version structure
 #TODO: License automation
 perm () {
@@ -47,8 +39,13 @@ echo ""
 List=("Essentials" "Scikit-learn" "OpenCV+CUDA" "Opencv_Contrib+CUDA" "CAFFE2+CUDA" "PyTorch" "Tensorflow+CUDA" "TensorRT" "Realsense" "Kinect" "ROS" "OpenGL" "GLSL" "GLM")
 totalCount=14
 check_internet_connection () {
-	#TODO: Check internet
-	exit 1
+	#./scripts/Internet.sh
+	wget --spider --quiet http://www.google.com
+	if [ "$?" != 0 ]; then
+		echo "Internet access failed. Please note this tool needs internet connection to install packages and display licenses"
+	else
+		echo "System has internet access."
+	fi
 }
 print_license () {
 	echo "By installing this, you are agreeing to all the following terms and licenses:"

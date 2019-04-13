@@ -2,6 +2,8 @@
 
 #TODO: Supported version structure
 #TODO: License automation
+sudo mkdir /usr/share/doc/JAI-TC
+sudo cp License /usr/share/doc/JAY-TC/copyright
 perm () {
 	echo "By using this tool you are agreeing to the following:"
 	cat License
@@ -24,7 +26,7 @@ if [ ! -f /tmp/JAI-TC_License.txt ]; then
 else
 	echo "License found!"
 fi
-#select which package options you prefer
+#select which package options you prefer, chose between pip or apt
 reboot_time=5
 option="pip"
 #$option="apt"
@@ -32,6 +34,7 @@ echo "Installing required packages..."
 sudo apt update
 sudo apt upgrade
 sudo apt install git
+sudo apt install lynx
 echo "Ready!"
 echo "Default python package option: $option"
 echo "___"
@@ -50,11 +53,26 @@ check_internet_connection () {
 print_license () {
 	echo "By installing this, you are agreeing to all the following terms and licenses:"
 	echo "Package category: $1"
-	#TODO: make license files that has the address to the license for downloading
-	#TODO: get the license from their website
-	#TODO: Display license and have them hit yes for signiture, store file in licenses folder and upload a copy to my website for book keeping
+	if [ ! -f ./licences/$1.license ]; then
+		echo "License not found, This means the tool has missing or corupted files. Please try redownloading the tool chain and do not modify the license files."
+		exit 1
+	else
+		cat ./licences/$1.license
+	fi
+	if [ -f ./licences/$1.sh ]; then
+	while true; do
+		read -p "Do you wish view these licenses?" yn
+		case $yn in
+		    [Yy]* ) ./licences/$1.sh; break;;
+		    [Nn]* ) echo "Skipped"; break;;
+		    * ) echo "Please answer yes or no.";;
+		esac
+	done
+	fi
+	read -n 1 -s -r -p "Press any key to continue..."
 }
 menu () { 
+	clear
 	echo "Please select one of the following packages to install:"
 	i=0
 	for index in ${List[@]}
@@ -63,11 +81,26 @@ menu () {
 		echo "$i: $index"
 	done
 	echo "h: Help"
+	echo "c: Credits"
 	echo "q: Quit"
 	read -p "Enter Package number: " package
 	if [ "$package" = "h" ] || [ "$package" = "H" ]
 	then
+		clear
 		echo "Help menu:"
+		echo "If you have any questions with regards to this tool, please contact saeedib@oregonstate.edu"
+		read -n 1 -s -r -p "Press any key to continue..."
+		menu
+	elif [ "$package" = "c" ] || [ "$package" = "C" ]
+	then
+		clear
+		echo "Credits:"
+		echo "Developed by: Behnam Saeedi (Saeedib@oregonstate.edu)"
+		echo "Advisor: Donal Lee Heer (@oregonstate.edu)"
+		echo "Special thanks to D. Kevin McGrath (@oregonstate.edu)"
+		echo "Special thanks to Prof. Bill Smart (@oregonstate.edu)"
+		echo "Special thanks to Jim Harlow (https://www.jetsonhacks.com)"
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "q" ] || [ "$package" = "Q" ]
 	then
@@ -83,6 +116,7 @@ menu () {
 			exit 0
 		else
 			echo "Done!"
+			clear
 			exit 0
 		fi
 		
@@ -104,7 +138,7 @@ menu () {
 	elif [ "$package" = "3" ]
 	then
 		print_license OpenCV+CUDA
-		./scripts/OpenCV+CUDA.sh
+		sudo ./scripts/OpenCV+CUDA.sh
 		menu
 	elif [ "$package" = "4" ]
 	then

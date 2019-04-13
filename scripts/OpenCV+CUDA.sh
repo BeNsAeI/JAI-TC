@@ -1,14 +1,11 @@
 #!/bin/bash
 
-#TODO: Refactor (JHIC)
-#TODO: Display License
 DOWNLOAD_OPENCV_EXTRAS=NO
 DOE=n
 OPENCV_SOURCE_DIR=/media/nvidia/OpenCV
 WHEREAMI=$PWD
 CLEANUP=true
-#TODO: list of supported versions
-#TODO: test to see if it works
+
 read -p "Enter CV version: [3.4.1] " OPENCV_VERSION
 if [ "$OPENCV_VERSION" = "" ]
 then

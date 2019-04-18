@@ -2,8 +2,9 @@
 
 #TODO: Supported version structure
 #TODO: License automation
-sudo mkdir /usr/share/doc/JAI-TC
-sudo cp License /usr/share/doc/JAY-TC/copyright
+#Global Vairables:
+path=$PWD
+#Global Methods:
 perm () {
 	echo "By using this tool you are agreeing to the following:"
 	cat License
@@ -20,32 +21,14 @@ perm () {
 		exit 1
 	fi
 }
-if [ ! -f /tmp/JAI-TC_License.txt ]; then
-	echo "License not found!"
-	perm
-else
-	echo "License found!"
-fi
-#select which package options you prefer, chose between pip or apt
-reboot_time=5
-option="pip"
-#$option="apt"
-echo "Installing required packages..."
-sudo apt update
-sudo apt upgrade
-sudo apt install git
-sudo apt install lynx
-echo "Ready!"
-echo "Default python package option: $option"
-echo "___"
-echo ""
-List=("Essentials" "Scikit-learn" "OpenCV+CUDA" "Opencv_Contrib+CUDA" "CAFFE2+CUDA" "PyTorch" "Tensorflow+CUDA" "TensorRT" "Realsense" "Kinect" "ROS" "OpenGL" "GLSL" "GLM")
-totalCount=14
 check_internet_connection () {
 	#./scripts/Internet.sh
 	wget --spider --quiet http://www.google.com
 	if [ "$?" != 0 ]; then
 		echo "Internet access failed. Please note this tool needs internet connection to install packages and display licenses"
+		read -n 1 -s -r -p "Press any key to continue..."
+		echo""
+		exit 1
 	else
 		echo "System has internet access."
 	fi
@@ -73,6 +56,8 @@ print_license () {
 }
 menu () { 
 	clear
+	cd $path
+	echo "Path is $PWD."
 	echo "Please select one of the following packages to install:"
 	i=0
 	for index in ${List[@]}
@@ -127,90 +112,143 @@ menu () {
 	then
 		print_license Essentials
 		./scripts/Essentials.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	
 	elif [ "$package" = "2" ]
 	then
 		print_license Scikit-learn
 		./scripts/Scikit-learn.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 
 	elif [ "$package" = "3" ]
 	then
 		print_license OpenCV+CUDA
 		sudo ./scripts/OpenCV+CUDA.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "4" ]
 	then
 		print_license Opencv_Contrib+CUDA
-		#TODO: Finish this
 		./scripts/Opencv_Contrib+CUDA.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "5" ]
 	then
 		print_license CAFFE2+CUDA
 		#TODO: Finish this
 		./scripts/CAFFE2+CUDA.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "6" ]
 	then
 		print_license PyTorch
 		#TODO: Finish this
 		./scripts/PyTorch.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "7" ]
 	then
 		print_license Tensorflow+CUDA
 		#TODO: Finish this
 		./scripts/Tensorflow+CUDA.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "8" ]
 	then
 		print_license TensorRT
 		#TODO: Finish this
 		./scripts/TensorRT.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "9" ]
 	then
 		print_license Realsense
 		./scripts/Realsense.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "10" ]
 	then
 		print_license Kinect
 		#TODO: Finish this
 		./scripts/Kinect.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "11" ]
 	then
 		print_license ROS
-		#TODO: Finish this
 		./scripts/ROS.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "12" ]
 	then
-		print_license OpenGL
-		./scripts/OpenGL.sh
+		print_license ROS-Desktop-Full
+		./scripts/ROS-Desktop-Full.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
-
 	elif [ "$package" = "13" ]
 	then
-		print_license GLSL
-		#TODO: Finish this
-		./scripts/GLSL.sh
+		print_license ROS-by-Package
+		./scripts/ROS-by-Package.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	elif [ "$package" = "14" ]
 	then
+		print_license OpenGL
+		./scripts/OpenGL.sh
+		read -n 1 -s -r -p "Press any key to continue..."
+		menu
+
+	elif [ "$package" = "15" ]
+	then
 		print_license GLM
-		#TODO: Finish this
 		./scripts/GLM.sh
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	else
 		echo "Error: package labled \"$package\" does not exist"
+		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	fi
 }
-
+sudo mkdir /usr/share/doc/JAI-TC
+sudo cp License /usr/share/doc/JAY-TC/copyright
+check_internet_connection
+if [ ! -f /tmp/JAI-TC_License.txt ]; then
+	echo "License not found!"
+	perm
+else
+	echo "License found!"
+fi
+#select which package options you prefer, chose between pip or apt
+reboot_time=5
+option="pip"
+#$option="apt"
+echo "Setting Jetson to performance mode:"
+sudo nvpmodel -m 0
+sudo ~/jetson_clocks.sh
+echo "Installing required packages..."
+sudo apt update
+sudo apt upgrade -y
+sudo apt install git -y
+sudo apt install lynx -y
+echo "refreshing installation and license scripts"
+cd scripts
+chmod u+x *.sh
+cd ../
+cd licences
+chmod u+x *.sh
+cd ../
+echo "get current path:"
+path=$PWD
+echo "path is: $path"
+echo "Ready!"
+echo "Default python package option: $option"
+echo "___"
+echo ""
+List=("Essentials" "Scikit-learn" "OpenCV+CUDA" "Opencv_Contrib+CUDA" "CAFFE2+CUDA" "PyTorch" "Tensorflow+CUDA" "TensorRT" "Realsense" "Kinect" "ROS" "ROS-Desktop-Full" "ROS-by-Package" "OpenGL" "GLM")
+totalCount=15
 menu
 #git clone --recursive https://github.com/pytorch/pytorch.git
 #cd pytorch

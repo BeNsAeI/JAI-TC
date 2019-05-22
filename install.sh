@@ -90,6 +90,7 @@ menu () {
 	elif [ "$package" = "q" ] || [ "$package" = "Q" ]
 	then
 		ans="N"
+		sudo su -c 'echo 0 > /sys/devices/pwm-fan/target_pwm'
 		read -p "Would you like to reboot?[y/N]" ans
 		if [ "$ans" = "y" ] || [ "$ans" = "Y" ]
 		then
@@ -107,107 +108,8 @@ menu () {
 		
 	else
 		echo "Installing ${List[$((package-1))]}..."
-	fi
-	if [ "$package" = "1" ]
-	then
-		print_license Essentials
-		./scripts/Essentials.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	
-	elif [ "$package" = "2" ]
-	then
-		print_license Scikit-learn
-		./scripts/Scikit-learn.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-
-	elif [ "$package" = "3" ]
-	then
-		print_license OpenCV+CUDA
-		sudo ./scripts/OpenCV+CUDA.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "4" ]
-	then
-		print_license Opencv_Contrib+CUDA
-		./scripts/Opencv_Contrib+CUDA.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "5" ]
-	then
-		print_license CAFFE2+CUDA
-		#TODO: Finish this
-		./scripts/CAFFE2+CUDA.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "6" ]
-	then
-		print_license PyTorch
-		#TODO: Finish this
-		./scripts/PyTorch.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "7" ]
-	then
-		print_license Tensorflow+CUDA
-		#TODO: Finish this
-		./scripts/Tensorflow+CUDA.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "8" ]
-	then
-		print_license TensorRT
-		#TODO: Finish this
-		./scripts/TensorRT.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "9" ]
-	then
-		print_license Realsense
-		./scripts/Realsense.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "10" ]
-	then
-		print_license Kinect
-		#TODO: Finish this
-		./scripts/Kinect.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "11" ]
-	then
-		print_license ROS
-		./scripts/ROS.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "12" ]
-	then
-		print_license ROS-Desktop-Full
-		./scripts/ROS-Desktop-Full.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "13" ]
-	then
-		print_license ROS-by-Package
-		./scripts/ROS-by-Package.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	elif [ "$package" = "14" ]
-	then
-		print_license OpenGL
-		./scripts/OpenGL.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-
-	elif [ "$package" = "15" ]
-	then
-		print_license GLM
-		./scripts/GLM.sh
-		read -n 1 -s -r -p "Press any key to continue..."
-		menu
-	else
-		echo "Error: package labled \"$package\" does not exist"
+		print_license ${List[$((package-1))]}
+		sudo ./scripts/${List[$((package-1))]}.sh
 		read -n 1 -s -r -p "Press any key to continue..."
 		menu
 	fi
@@ -227,7 +129,7 @@ option="pip"
 #$option="apt"
 echo "Setting Jetson to performance mode:"
 sudo nvpmodel -m 0
-sudo ~/jetson_clocks.sh
+sudo su -c 'echo 255 > /sys/devices/pwm-fan/target_pwm'
 echo "Installing required packages..."
 sudo apt update
 sudo apt upgrade -y
@@ -247,8 +149,18 @@ echo "Ready!"
 echo "Default python package option: $option"
 echo "___"
 echo ""
-List=("Essentials" "Scikit-learn" "OpenCV+CUDA" "Opencv_Contrib+CUDA" "CAFFE2+CUDA" "PyTorch" "Tensorflow+CUDA" "TensorRT" "Realsense" "Kinect" "ROS" "ROS-Desktop-Full" "ROS-by-Package" "OpenGL" "GLM")
-totalCount=15
+#List=("Essentials" "Scikit-learn" "OpenCV+CUDA" "Opencv_Contrib+CUDA" "CAFFE2+CUDA" "PyTorch" "Tensorflow+CUDA" "TensorRT" "Realsense" "Kinect" "ROS" "ROS-Desktop-Full" "ROS-by-Package" "OpenGL" "GLM")
+declare -a List
+cd scripts
+for file in *.sh
+do
+	file=${file%?}
+	file=${file%?}
+	List=("${List[@]}" "${file%?}")
+done
+cd ../
+totalCount=${#List[@]}
+echo "$totalCount Scripts were found."
 menu
 #git clone --recursive https://github.com/pytorch/pytorch.git
 #cd pytorch

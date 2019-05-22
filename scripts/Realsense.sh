@@ -7,6 +7,7 @@ cd librealsense
 git checkout v1.12.1
 echo "Patch courtesy of JetsonHacks.com"
 patch -p1 -i $INSTALL_DIR/patches/uvc-v4l2.patch
+sudo cp ../../patches/RS_types.h src/types.h
 echo "Installing essentials..."
 sudo apt-get install libusb-1.0-0-dev pkg-config -y
 sudo apt-get install libglfw3-dev -y

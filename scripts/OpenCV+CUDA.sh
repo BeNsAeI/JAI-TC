@@ -1,11 +1,11 @@
 #!/bin/bash
-
 DOWNLOAD_OPENCV_EXTRAS=NO
 DOE=n
-OPENCV_SOURCE_DIR=/media/nvidia/OpenCV
+mkdir OpenCV_source
+OPENCV_SOURCE_DIR=$PWD/OpenCV_source
 WHEREAMI=$PWD
 CLEANUP=true
-
+git config --global user.email "root@nvidia.com"
 read -p "Enter CV version: [3.4.1] " OPENCV_VERSION
 if [ "$OPENCV_VERSION" = "" ]
 then
@@ -28,7 +28,7 @@ read -p "Would you like to install OpenCV EXTRAs? [y/N] " DOE
 read -p "Would you like to clean up after installation is over? [Y/n] " cu
 if [ "$jetson" = "tx2" ] || [ "$jetson" = "TX2" ]
 then
-	ARCH_BIN=6.2                                                                                                    
+	ARCH_BIN=6.2
 elif [ "$jetson" = "tx1" ] || [ "$jetson" = "TX1" ]
 then
 	ARCH_BIN=5.3
@@ -44,8 +44,7 @@ else
 	else
 		echo "Sorry! $jetson is not supported"
 		exit 1
-	fi	
-	
+	fi
 fi
 echo "Arch binary to be used is: $ARCH_BIN."
 if [ "$DOE" = "y" ] || [ "$DOE" = "Y" ]
@@ -58,40 +57,47 @@ then
 fi
 echo "Download OpenCV extras > $DOWNLOAD_OPENCV_EXTRAS"
 echo "Clean up? > $CLEANUP"
-CMAKE_INSTALL_PREFIX=$INSTALL_DIR
-source scripts/jetson_variables.sh
 sudo apt-add-repository universe
 sudo apt-get update
+sudo apt install cmake -y
+sudo apt install libavcodec-dev -y
+sudo apt install libavformat-dev -y
+sudo apt install libavutil-dev -y
+sudo apt install libeigen3-dev -y
+sudo apt install libglew-dev -y
+sudo apt install libgtk2.0-dev 
+sudo apt install libgtk-3-dev -y
+sudo apt install libjasper-dev -y 
+sudo apt install libjpeg-dev -y
+sudo apt install libpng-dev -y
+sudo apt install libpostproc-dev -y
+sudo apt install libswscale-dev -y
+sudo apt install libtbb-dev -y
+sudo apt install libtiff5-dev -y
+sudo apt install libv4l-dev -y
+sudo apt install libv4l-dev -y
+sudo apt install libxvidcore-dev -y
+sudo apt install libx264-dev -y
+sudo apt install libdc1394-22 -y
+sudo apt install libdc1394-22-dev -y
+sudo apt install libavresample-dev -y
+sudo apt install libavresample3 -y
+sudo apt install libgphoto2-6 -y
+sudo apt install libgphoto2-dev -y
+sudo apt install qtbase5-dev -y
+sudo apt install qt5-default -y
+sudo apt install zlib1g-dev -y
+sudo apt install pkg-config -y
+sudo apt install -y python-dev python-numpy python-py python-pytest
+sudo apt install -y python3-dev python3-numpy python3-py python3-pytest
+sudo apt install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+CMAKE_INSTALL_PREFIX=$INSTALL_DIR
+source scripts/jetson_variables.sh
 cd $WHEREAMI
-sudo apt-get install -y \
-	cmake \
-	libavcodec-dev \
-	libavformat-dev \
-	libavutil-dev \
-	libeigen3-dev \
-	libglew-dev \
-	libgtk2.0-dev \
-	libgtk-3-dev \
-	libjasper-dev \
-	libjpeg-dev \
-	libpng12-dev \
-	libpostproc-dev \
-	libswscale-dev \
-	libtbb-dev \
-	libtiff5-dev \
-	libv4l-dev \
-	libxvidcore-dev \
-	libx264-dev \
-	qt5-default \
-	zlib1g-dev \
-	pkg-config
 cd /usr/local/cuda/include
 sudo patch -N cuda_gl_interop.h $WHEREAMI'/patches/OpenGLHeader.patch' 
 cd /usr/lib/aarch64-linux-gnu/
-sudo ln -sf tegra/libGL.so libGL.so
-sudo apt-get install -y python-dev python-numpy python-py python-pytest
-sudo apt-get install -y python3-dev python3-numpy python3-py python3-pytest
-sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev 
+sudo ln -sf tegra/libGL.so libGL.so 
 cd $OPENCV_SOURCE_DIR
 git clone https://github.com/opencv/opencv.git
 git clone https://github.com/opencv/opencv_contrib.git

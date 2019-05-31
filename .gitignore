@@ -1,0 +1,7 @@
+libfreenect/
+OpenCV_source/
+Realsense/
+libfreenect/*
+OpenCV_source/*
+Realsense/*
+pytorch/*

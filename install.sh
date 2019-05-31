@@ -21,6 +21,20 @@ perm () {
 		exit 1
 	fi
 }
+refresh_list () {
+	cd scripts
+	declare -a newList
+	List=("${newList[@]}")
+	for file in *.sh
+	do
+		file=${file%?}
+		file=${file%?}
+		List=("${List[@]}" "${file%?}")
+	done
+	cd ../
+	totalCount=${#List[@]}
+	echo "$totalCount Scripts were found."
+}
 check_internet_connection () {
 	#./scripts/Internet.sh
 	wget --spider --quiet http://www.google.com
@@ -38,7 +52,8 @@ print_license () {
 	echo "Package category: $1"
 	if [ ! -f ./licences/$1.license ]; then
 		echo "License not found, This means the tool has missing or corupted files. Please try redownloading the tool chain and do not modify the license files."
-		exit 1
+		read -n 1 -s -r -p "Press any key to continue..."
+		menu
 	else
 		cat ./licences/$1.license
 	fi
@@ -65,6 +80,7 @@ menu () {
 		i=$((i+1))
 		echo "$i: $index"
 	done
+	echo "r: Refresh list"
 	echo "h: Help"
 	echo "c: Credits"
 	echo "q: Quit"
@@ -86,6 +102,10 @@ menu () {
 		echo "Special thanks to Prof. Bill Smart (@oregonstate.edu)"
 		echo "Special thanks to Jim Harlow (https://www.jetsonhacks.com)"
 		read -n 1 -s -r -p "Press any key to continue..."
+		menu
+	elif [ "$package" = "r" ] || [ "$package" = "R" ]
+	then
+		refresh_list
 		menu
 	elif [ "$package" = "q" ] || [ "$package" = "Q" ]
 	then
@@ -151,16 +171,8 @@ echo "___"
 echo ""
 #List=("Essentials" "Scikit-learn" "OpenCV+CUDA" "Opencv_Contrib+CUDA" "CAFFE2+CUDA" "PyTorch" "Tensorflow+CUDA" "TensorRT" "Realsense" "Kinect" "ROS" "ROS-Desktop-Full" "ROS-by-Package" "OpenGL" "GLM")
 declare -a List
-cd scripts
-for file in *.sh
-do
-	file=${file%?}
-	file=${file%?}
-	List=("${List[@]}" "${file%?}")
-done
-cd ../
-totalCount=${#List[@]}
-echo "$totalCount Scripts were found."
+totalCount=0
+refresh_list
 menu
 #git clone --recursive https://github.com/pytorch/pytorch.git
 #cd pytorch

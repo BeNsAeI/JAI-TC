@@ -1,13 +1,14 @@
 #!/bin/bash
 
-git clone https://github.com/pytorch/pytorch
+git clone --recursive http://github.com/pytorch/pytorch
 cd pytorch
-sudo git submodule update -init
-sudo git submodule update --init --recursive
-sudo pip install --user setuptools
-sudo pip3 install --user setuptools
-sudo pip install -r requirements.txt
+export USE_NCCL=0
+export USE_DISTRIBUTED=0
+export TORCH_CUDA_ARCH_LIST="5.3;6.2;7.2"
+sudo apt install python3-pip -y
+sudo apt install cmake -y
+sudo pip3 install -U setuptools
 sudo pip3 install -r requirements.txt
-
-sudo python setup.py install
-sudo python3 setup.py install
+pip3 install scikit-build --user
+pip3 install ninja --user
+python3 setup.py bdist_wheel

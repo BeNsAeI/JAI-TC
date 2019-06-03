@@ -15,6 +15,7 @@ sudo apt install python3-pip -y
 echo "Installing python Essntials..."
 sudo apt install libffi-dev -y
 sudo apt install python-dev -y
+sudo apt install libzmq3-dev -y
 sudo apt install build-essential -y
 sudo apt install -y libtiff5-dev 
 sudo apt install libjpeg8-dev -y

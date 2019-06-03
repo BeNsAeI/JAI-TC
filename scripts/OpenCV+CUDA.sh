@@ -1,37 +1,156 @@
 #!/bin/bash
-DOWNLOAD_OPENCV_EXTRAS=NO
-DOE=n
-mkdir OpenCV_source
-OPENCV_SOURCE_DIR=$PWD/OpenCV_source
-WHEREAMI=$PWD
-CLEANUP=true
-git config --global user.email "root@nvidia.com"
-read -p "Enter CV version: [3.4.1] " OPENCV_VERSION
-if [ "$OPENCV_VERSION" = "" ]
-then
-	OPENCV_VERSION=3.4.1
-fi
-echo " > $OPENCV_VERSION"
-read -p "Enter install directory: [/usr/local] " INSTALL_DIR
-if [ "$INSTALL_DIR" = "" ]
-then
-	INSTALL_DIR=/usr/local
-fi
-echo " > $INSTALL_DIR"
-read -p "Which jetson are you using? [TX1/*TX2*] " jetson
+
+# Copyright (c) 2018, NVIDIA CORPORATION.  All rights reserved.
+#
+# NVIDIA Corporation and its licensors retain all intellectual property
+# and proprietary rights in and to this software, related documentation
+# and any modifications thereto.  Any use, reproduction, disclosure or
+# distribution of this software and related documentation without an express
+# license agreement from NVIDIA Corporation is strictly prohibited.
+folder="/home/nvidia/"
+user="nvidia"
+passwd="nvidia"
+read -p "Which jetson are you using? [TK1/TX1/*TX2*/Xavier/Nano] " jetson
 if [ "$jetson" = "" ]
 then
 	jetson="TX2"
 fi
-echo " > $jetson"
-read -p "Would you like to install OpenCV EXTRAs? [y/N] " DOE
-read -p "Would you like to clean up after installation is over? [Y/n] " cu
 if [ "$jetson" = "tx2" ] || [ "$jetson" = "TX2" ]
 then
-	ARCH_BIN=6.2
+	echo "** Install requirement"
+	sudo apt-get install -y build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+	sudo apt-get install -y python2.7-dev
+	sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+	sudo apt-get install -y libv4l-dev v4l-utils qv4l2 v4l2ucp
+	sudo apt-get install -y curl
+	sudo apt-get update
+
+	echo "** Download opencv-3.4.0"
+	cd $folder
+	curl -L https://github.com/opencv/opencv/archive/3.4.0.zip -o opencv-3.4.0.zip
+	unzip opencv-3.4.0.zip 
+	cd opencv-3.4.0/
+
+	echo "** Building..."
+	mkdir release
+	cd release/
+	cmake -D WITH_CUDA=ON -D CUDA_ARCH_BIN="6.2" -D CUDA_ARCH_PTX="" -D WITH_GSTREAMER=ON -D WITH_LIBV4L=ON -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+
+	make
+	sudo make install
+								
 elif [ "$jetson" = "tx1" ] || [ "$jetson" = "TX1" ]
 then
-	ARCH_BIN=5.3
+	echo "Unfortunately this is not supported yet."
+	echo "Trying anyway!"
+	echo "** Install requirement"
+	sudo apt-get install -y build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+	sudo apt-get install -y python2.7-dev
+	sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+	sudo apt-get install -y libv4l-dev v4l-utils qv4l2 v4l2ucp
+	sudo apt-get install -y curl
+	sudo apt-get update
+
+	echo "** Download opencv-3.4.0"
+	cd $folder
+	curl -L https://github.com/opencv/opencv/archive/3.4.0.zip -o opencv-3.4.0.zip
+	unzip opencv-3.4.0.zip 
+	cd opencv-3.4.0/
+
+	echo "** Building..."
+	mkdir release
+	cd release/
+	cmake -D WITH_CUDA=ON -D CUDA_ARCH_BIN="6.2" -D CUDA_ARCH_PTX="" -D WITH_GSTREAMER=ON -D WITH_LIBV4L=ON -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+
+	make
+	sudo make install
+elif [ "$jetson" = "tk1" ] || [ "$jetson" = "TK1" ]
+then
+	echo "Unfortunately this is not supported yet."
+	echo "Trying anyway!"
+	echo "** Install requirement"
+	sudo apt-get install -y build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+	sudo apt-get install -y python2.7-dev
+	sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+	sudo apt-get install -y libv4l-dev v4l-utils qv4l2 v4l2ucp
+	sudo apt-get install -y curl
+	sudo apt-get update
+
+	echo "** Download opencv-3.4.0"
+	cd $folder
+	curl -L https://github.com/opencv/opencv/archive/3.4.0.zip -o opencv-3.4.0.zip
+	unzip opencv-3.4.0.zip 
+	cd opencv-3.4.0/
+
+	echo "** Building..."
+	mkdir release
+	cd release/
+	cmake -D WITH_CUDA=ON -D CUDA_ARCH_BIN="6.2" -D CUDA_ARCH_PTX="" -D WITH_GSTREAMER=ON -D WITH_LIBV4L=ON -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+
+	make
+	sudo make install
+elif [ "$jetson" = "xavier" ] || [ "$jetson" = "Xavier" ]
+then
+	echo "** Install requirement"
+	sudo apt-get update
+	sudo apt-get install -y build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+	sudo apt-get install -y python2.7-dev
+	sudo apt-get install -y python-dev python-numpy libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+	sudo apt-get install -y libv4l-dev v4l-utils qv4l2 v4l2ucp
+	sudo apt-get install -y curl
+	sudo apt-get update
+
+	echo "** Download opencv-3.4.0"
+	cd $folder
+	curl -L https://github.com/opencv/opencv/archive/3.4.0.zip -o opencv-3.4.0.zip
+	unzip opencv-3.4.0.zip 
+	cd opencv-3.4.0/
+
+	echo "** Building..."
+	mkdir release
+	cd release/
+	cmake -D WITH_CUDA=ON -D CUDA_ARCH_BIN="7.2" -D CUDA_ARCH_PTX="" -D WITH_GSTREAMER=ON -D WITH_LIBV4L=ON -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+
+	make
+	sudo make install
+
+	echo "** Install opencv-3.4.0 successfully"
+elif [ "$jetson" = "nano" ] || [ "$jetson" = "Nano" ]
+then
+	echo " Remove OpenCV3.3 first"
+	sudo sudo apt-get purge *libopencv*
+
+	echo " Install requirement"
+	sudo apt-get update
+	sudo apt-get install -y build-essential cmake git libgtk2.0-dev pkg-config libavcodec-dev libavformat-dev libswscale-dev
+	sudo apt-get install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
+	sudo apt-get install -y python2.7-dev python3.6-dev python-dev python-numpy python3-numpy
+	sudo apt-get install -y libtbb2 libtbb-dev libjpeg-dev libpng-dev libtiff-dev libjasper-dev libdc1394-22-dev
+	sudo apt-get install -y libv4l-dev v4l-utils qv4l2 v4l2ucp
+	sudo apt-get install -y curl
+	sudo apt-get update
+
+	echo "** Download opencv-4.0.0"
+	cd $folder
+	curl -L https://github.com/opencv/opencv/archive/4.0.0.zip -o opencv-4.0.0.zip
+	curl -L https://github.com/opencv/opencv_contrib/archive/4.0.0.zip -o opencv_contrib-4.0.0.zip
+	unzip opencv-4.0.0.zip 
+	unzip opencv_contrib-4.0.0.zip 
+	cd opencv-4.0.0/
+
+	echo "** Building..."
+	mkdir release
+	cd release/
+	cmake -D WITH_CUDA=ON -D CUDA_ARCH_BIN="5.3" -D CUDA_ARCH_PTX="" -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-4.0.0/modules -D WITH_GSTREAMER=ON -D WITH_LIBV4L=ON -D BUILD_opencv_python2=ON -D BUILD_opencv_python3=ON -D BUILD_TESTS=OFF -D BUILD_PERF_TESTS=OFF -D BUILD_EXAMPLES=OFF -D CMAKE_BUILD_TYPE=RELEASE -D CMAKE_INSTALL_PREFIX=/usr/local ..
+	make -j3
+	sudo make install
+	sudo apt-get install -y python-opencv python3-opencv
+
+	echo "** Install opencv-4.0.0 successfully"
 else
 	jetson="TX2"
 	read -p "Sorry! $jetson is not supported. Please select one of the supported versions [TX1/*TX2*]" jetson
@@ -46,133 +165,7 @@ else
 		exit 1
 	fi
 fi
-echo "Arch binary to be used is: $ARCH_BIN."
-if [ "$DOE" = "y" ] || [ "$DOE" = "Y" ]
-then
-	DOWNLOAD_OPENCV_EXTRAS=YES
-fi
-if [ "$cu" = "n" ] || [ "$cu" = "N" ]
-then
-	CLEANUP=false
-fi
-echo "Download OpenCV extras > $DOWNLOAD_OPENCV_EXTRAS"
-echo "Clean up? > $CLEANUP"
-sudo apt-add-repository universe
-sudo apt-get update
-sudo apt install cmake -y
-sudo apt install libavcodec-dev -y
-sudo apt install libavformat-dev -y
-sudo apt install libavutil-dev -y
-sudo apt install libeigen3-dev -y
-sudo apt install libglew-dev -y
-sudo apt install libgtk2.0-dev 
-sudo apt install libgtk-3-dev -y
-sudo apt install libjasper-dev -y 
-sudo apt install libjpeg-dev -y
-sudo apt install libpng-dev -y
-sudo apt install libpostproc-dev -y
-sudo apt install libswscale-dev -y
-sudo apt install libtbb-dev -y
-sudo apt install libtiff5-dev -y
-sudo apt install libv4l-dev -y
-sudo apt install libv4l-dev -y
-sudo apt install libxvidcore-dev -y
-sudo apt install libx264-dev -y
-sudo apt install libdc1394-22 -y
-sudo apt install libdc1394-22-dev -y
-sudo apt install libavresample-dev -y
-sudo apt install libavresample3 -y
-sudo apt install libgphoto2-6 -y
-sudo apt install libgphoto2-dev -y
-sudo apt install qtbase5-dev -y
-sudo apt install qt5-default -y
-sudo apt install zlib1g-dev -y
-sudo apt install pkg-config -y
-sudo apt install -y python-dev python-numpy python-py python-pytest
-sudo apt install -y python3-dev python3-numpy python3-py python3-pytest
-sudo apt install -y libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
-CMAKE_INSTALL_PREFIX=$INSTALL_DIR
-source scripts/jetson_variables.sh
-cd $WHEREAMI
-cd /usr/local/cuda/include
-sudo patch -N cuda_gl_interop.h $WHEREAMI'/patches/OpenGLHeader.patch' 
-cd /usr/lib/aarch64-linux-gnu/
-sudo ln -sf tegra/libGL.so libGL.so 
-cd $OPENCV_SOURCE_DIR
-git clone https://github.com/opencv/opencv.git
-git clone https://github.com/opencv/opencv_contrib.git
-cd opencv_contrib
-git checkout -b v${OPENCV_VERSION} ${OPENCV_VERSION}
-cd ../opencv
-git checkout -b v${OPENCV_VERSION} ${OPENCV_VERSION}
-if [ $OPENCV_VERSION = 3.4.1 ] ; then
-  git merge ec0bb66
-  git cherry-pick 549b5df
-fi
-if [ $DOWNLOAD_OPENCV_EXTRAS == "YES" ] ; then
- echo "Installing opencv_extras"
- cd $OPENCV_SOURCE_DIR
- git clone https://github.com/opencv/opencv_extra.git
- cd opencv_extra
- git checkout -b v${OPENCV_VERSION} ${OPENCV_VERSION}
-fi
-cd $OPENCV_SOURCE_DIR/opencv
-mkdir build
-cd build
-time cmake -D CMAKE_BUILD_TYPE=RELEASE \
-	  -D CMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX} \
-	  -D WITH_CUDA=ON \
-	  -D CUDA_ARCH_BIN=${ARCH_BIN} \
-	  -D CUDA_ARCH_PTX="" \
-	  -D ENABLE_FAST_MATH=ON \
-	  -D CUDA_FAST_MATH=ON \
-	  -D WITH_CUBLAS=ON \
-	  -D WITH_LIBV4L=ON \
-	  -D WITH_GSTREAMER=ON \
-	  -D WITH_GSTREAMER_0_10=OFF \
-	  -D WITH_QT=ON \
-	  -D WITH_OPENGL=ON \
-	  -D OPENCV_EXTRA_MODULES_PATH=/media/nvidia/OpenCV/opencv_contrib/modules \
-	  -DBUILD_opencv_xfeatures2d=OFF \
-	  ../
-if [ $? -eq 0 ] ; then
-  echo "CMake configuration make successful"
-else
-  echo "CMake issues " >&2
-  echo "Please check the configuration being used"
-  exit 1
-fi
-NUM_CPU=$(nproc)
-time make -j$(($NUM_CPU - 1))
-if [ $? -eq 0 ] ; then
-  echo "OpenCV make successful"
-else
-  echo "Make did not build " >&2
-  echo "Retrying ... "
-  make
-  if [ $? -eq 0 ] ; then
-	echo "OpenCV make successful"
-  else
-	echo "Make did not successfully build" >&2
-	echo "Please fix issues and retry build"
-	exit 1
-  fi
-fi
-echo "Installing ... "
-sudo make install
-if [ $? -eq 0 ] ; then
-   echo "OpenCV installed in: $CMAKE_INSTALL_PREFIX"
-else
-   echo "There was an issue with the final installation"
-   exit 1
-fi
-IMPORT_CHECK="$(python -c "import cv2 ; print cv2.__version__")"
-if [[ $IMPORT_CHECK != *$OPENCV_VERSION* ]]; then
-  echo "There was an error loading OpenCV in the Python sanity test."
-  echo "The loaded version does not match the version built here."
-  echo "Please check the installation."
-  echo "The first check should be the PYTHONPATH environment variable."
-fi
+
 echo ""
 echo "All Done!"
 echo "-----------------------------"

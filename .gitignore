@@ -1,4 +1,6 @@
 libfreenect/
+libfreenect
+libfreenect/*
 OpenCV_source/
 Realsense/
 libfreenect/*
